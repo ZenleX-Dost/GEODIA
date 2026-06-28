@@ -1,0 +1,20 @@
+code,nom,famille,lat,lon,classe,icf,ivp,ipd,ied,exposition
+R-102,Déversoir de l'eau de mer,hydraulique,33.1015,-6.8522,A,99.0,98.5,98.8,85.2,XS3
+R-103,Déversoir du canal,hydraulique,33.1018,-6.8519,A,99.0,98.5,98.8,82.1,XS3
+R-104,Bassin de tranquillisation REM1,hydraulique,33.1025,-6.8530,A,98.5,97.5,98.2,88.5,XS3
+R-105,Canal de rejet de l'eau de mer,canal,33.1030,-6.8540,A,95.0,93.0,94.4,79.3,XS3
+R-106,Bâtiment de la centrale électrique,bâtiment,33.1040,-6.8510,A,92.0,90.5,91.5,72.6,XA3
+R-107,Canal de connexion REM1/REM2,canal,33.1022,-6.8535,A,91.0,89.5,90.6,76.8,XS3
+R-108,Bassin d'aspiration de l'eau de mer,hydraulique,33.1012,-6.8545,B,85.0,80.0,83.5,70.2,XS3
+R-109,Station de pompage eau de mer,station,33.1020,-6.8550,B,82.0,78.0,80.8,68.5,XS3
+R-110,Réservoir d'eau douce REM2,réservoir,33.1035,-6.8515,B,78.0,75.0,77.1,65.3,HY3
+R-111,Fosse de neutralisation acide,fosse,33.1042,-6.8525,B,76.0,73.0,75.1,71.4,XA3
+R-112,Canal d'amenée eau brute,canal,33.1028,-6.8560,C,65.0,60.0,63.5,58.7,HY3
+R-113,Bassin de décantation,hydraulique,33.1038,-6.8555,C,62.0,58.0,60.8,55.2,XA3
+R-114,Bâtiment laboratoire contrôle,bâtiment,33.1045,-6.8505,C,55.0,52.0,54.1,48.9,ST2
+R-115,Fosses collectrices du phosphogypse,fosse,33.1050,-6.8530,C,58.0,55.0,57.1,62.3,XA3
+R-116,Station de traitement des effluents,station,33.1048,-6.8545,C,52.0,50.0,51.4,52.1,XA3
+R-117,Réservoir tampon,réservoir,33.1032,-6.8570,D,35.0,30.0,33.5,38.6,HY3
+R-118,Canal de distribution secondaire,canal,33.1055,-6.8520,D,30.0,28.0,29.4,35.2,ST2
+R-119,Bâtiment annexe maintenance,bâtiment,33.1060,-6.8510,D,25.0,22.0,24.1,30.5,ST2
+R-120,Local technique pompage,station,33.1058,-6.8535,D,20.0,18.0,19.4,28.3,ST2

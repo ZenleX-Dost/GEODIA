@@ -1,0 +1,4 @@
+ouvrage_code,date,inspecteur,etat,zone,pathologie_observee,gravite,etendue,commentaire
+R-102,2026-01-15,Ing. El Amrani,E2,Paroi sud,P2,2,15,Traces de rouille visibles sur 15% de la surface — armatures affleurantes
+R-104,2026-02-20,Ing. Benali,E1,Radier,P6,1,5,Légère dépression détectée visuellement — à confirmer par GPR
+R-106,2025-11-10,Ing. Tazi,E2,Façade est,P7,2,30,Front de carbonatation avancé sur 30% — phénolphtaléine incolore

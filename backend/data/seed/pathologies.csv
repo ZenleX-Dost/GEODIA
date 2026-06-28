@@ -1,0 +1,13 @@
+code,famille,description,symptomes,methodes,mecanismes
+P1,Enrobage,Enrobage insuffisant des armatures,Armatures visibles ou proches de la surface; éclatements localisés,Pachymètre,Défaut de mise en oeuvre ou érosion de surface réduisant la couverture protectrice
+P2,Corrosion,Corrosion induite par les chlorures,Taches de rouille; éclatements; fissures parallèles aux armatures; perte de section,Potentiel de corrosion; résistivité; teneur en chlorures,Pénétration des chlorures marins dépassant le seuil critique au niveau des armatures
+P3,Corrosion,Corrosion en zone submergée,Perte de section des armatures; dépôts biologiques; dégradation sous eau,Potentiel de corrosion; teneur en chlorures,Corrosion active des armatures en contact permanent avec l'eau de mer
+P4,Fissuration,Fissuration de service,Fissures fines < 0.3mm; réseau de faïençage; orientation aléatoire,Relevé de fissuration; UPV,Retrait; fluage; variations thermiques; charges de service
+P5,Fissuration,Fissuration structurelle / béton de faible qualité,Fissures > 0.3mm; orientées; traversantes; son creux au marteau,UPV; scléromètre; carottages,Sous-dimensionnement; surcharge; béton de mauvaise qualité; ségrégation
+P6,Affouillement,Affouillement / cavité sous radier,Affaissements localisés; vides sous dalles; érosion du sol support,Géoradar GPR; bathymétrie; InSAR,Érosion hydraulique du sol de fondation; lessivage sous radier
+P7,Carbonatation,Carbonatation du béton,Front de carbonatation > enrobage; indicateur phénolphtaléine incolore,Phénolphtaléine; potentiel de corrosion,Pénétration du CO2 abaissant le pH du béton sous le seuil de passivation
+P8,Attaque chimique,Attaque par les phosphates,Surfaces blanchâtres; désagrégation; gonflement; perte de résistance,pH; dosage phosphates; DRX,Réaction des phosphates avec la matrice cimentaire
+P9,Attaque chimique,Attaque sulfatique / phosphogypse,Ettringite secondaire; gonflement; fissuration en étoile; dépôts blancs,pH; dosage sulfates; DRX,Formation d'ettringite secondaire par attaque sulfatique externe
+P10,Joints,Défauts de joints / waterstops,Fuites aux joints; infiltrations; dégradation des waterstops visibles,Inspection visuelle; endoscopie,Vieillissement; déplacement ou rupture des joints d'étanchéité
+P11,Érosion,Abrasion / érosion hydraulique,Surfaces polies; perte de matière; granulats apparents; rugosité réduite,Inspection visuelle; relevé géométrique,Action mécanique de l'eau et des particules en suspension
+P12,Tassement,Tassement / soulèvement,Désalignements; fissures inclinées; déformation des structures; basculement,InSAR; nivellement; relevé géométrique,Mouvement différentiel du sol de fondation
