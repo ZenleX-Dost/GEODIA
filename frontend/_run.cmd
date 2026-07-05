@@ -6,4 +6,17 @@ echo  ========================================
 echo   GEODIA Frontend  ^|  http://localhost:5173
 echo  ========================================
 echo.
+
+if not exist "node_modules" (
+    echo [ERROR] node_modules not found.
+    echo         Please run start.cmd first to install npm dependencies.
+    pause
+    exit /b 1
+)
+
 npm run dev
+if errorlevel 1 (
+    echo.
+    echo [ERROR] Frontend crashed. See error above.
+    pause
+)
