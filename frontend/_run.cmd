@@ -14,7 +14,21 @@ if not exist "node_modules" (
     exit /b 1
 )
 
-npm.cmd run dev
+for /f "tokens=* usebackq" %%P in (`where npm.cmd 2^>nul`) do (
+    if not defined NPM_CMD set "NPM_CMD=%%P"
+)
+if not defined NPM_CMD (
+    for /f "tokens=* usebackq" %%P in (`where npm 2^>nul`) do (
+        if not defined NPM_CMD set "NPM_CMD=%%P"
+    )
+)
+if not defined NPM_CMD (
+    echo [ERROR] npm could not be found. Please install Node.js.
+    pause
+    exit /b 1
+)
+
+"%NPM_CMD%" run dev
 if errorlevel 1 (
     echo.
     echo [ERROR] Frontend crashed. See error above.
