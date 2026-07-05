@@ -14,7 +14,7 @@ if not exist "node_modules" (
     exit /b 1
 )
 
-npm run dev
+npm.cmd run dev
 if errorlevel 1 (
     echo.
     echo [ERROR] Frontend crashed. See error above.

@@ -19,39 +19,51 @@ set "FRONTEND=%ROOT%\frontend"
 set "VENV=%BACKEND%\venv"
 
 :: ─────────────────────────────────────────────────
-:: 1. Check Python
+:: 1. Check Python — resolve full path via where
 :: ─────────────────────────────────────────────────
 echo [1/5] Checking Python installation...
-python --version >nul 2>&1
-if errorlevel 1 (
+for /f "tokens=* usebackq" %%P in (`where python 2^>nul`) do (
+    if not defined PYTHON_EXE set "PYTHON_EXE=%%P"
+)
+if not defined PYTHON_EXE (
     echo [ERROR] Python is not installed or not in PATH.
     echo         Please install Python 3.10+ from https://www.python.org/downloads/
     echo         Make sure to check "Add Python to PATH" during installation.
     pause
     exit /b 1
 )
-for /f "tokens=*" %%V in ('python --version 2^>^&1') do echo         Found: %%V
+for /f "tokens=*" %%V in ('"%PYTHON_EXE%" --version 2^>^&1') do echo         Found: %%V ^| Path: %PYTHON_EXE%
 
 :: ─────────────────────────────────────────────────
-:: 2. Check Node / npm
+:: 2. Check Node / npm — resolve full paths via where
 :: ─────────────────────────────────────────────────
 echo.
 echo [2/5] Checking Node.js / npm installation...
-node --version >nul 2>&1
-if errorlevel 1 (
+for /f "tokens=* usebackq" %%P in (`where node 2^>nul`) do (
+    if not defined NODE_EXE set "NODE_EXE=%%P"
+)
+if not defined NODE_EXE (
     echo [ERROR] Node.js is not installed or not in PATH.
     echo         Please install Node.js 18+ from https://nodejs.org/
     pause
     exit /b 1
 )
-npm --version >nul 2>&1
-if errorlevel 1 (
+
+for /f "tokens=* usebackq" %%P in (`where npm.cmd 2^>nul`) do (
+    if not defined NPM_CMD set "NPM_CMD=%%P"
+)
+if not defined NPM_CMD (
+    for /f "tokens=* usebackq" %%P in (`where npm 2^>nul`) do (
+        if not defined NPM_CMD set "NPM_CMD=%%P"
+    )
+)
+if not defined NPM_CMD (
     echo [ERROR] npm is not available. Please reinstall Node.js.
     pause
     exit /b 1
 )
-for /f "tokens=*" %%V in ('node --version 2^>^&1') do echo         Found Node: %%V
-for /f "tokens=*" %%V in ('npm --version 2^>^&1') do echo         Found npm:  %%V
+for /f "tokens=*" %%V in ('"%NODE_EXE%" --version 2^>^&1') do echo         Found Node: %%V
+for /f "tokens=*" %%V in ('"%NPM_CMD%" --version 2^>^&1') do echo         Found npm:  %%V
 
 :: ─────────────────────────────────────────────────
 :: 3. Backend setup — virtual env + pip install
@@ -61,7 +73,7 @@ echo [3/5] Setting up Python backend...
 
 if not exist "%VENV%\Scripts\python.exe" (
     echo         Creating virtual environment...
-    python -m venv "%VENV%"
+    "%PYTHON_EXE%" -m venv "%VENV%"
     if errorlevel 1 (
         echo [ERROR] Failed to create virtual environment.
         pause
@@ -70,9 +82,12 @@ if not exist "%VENV%\Scripts\python.exe" (
     echo         Virtual environment created.
 )
 
+set "VENV_PY=%VENV%\Scripts\python.exe"
+set "VENV_PIP=%VENV%\Scripts\pip.exe"
+
 echo         Checking / installing Python dependencies...
-"%VENV%\Scripts\pip.exe" install --quiet --upgrade pip
-"%VENV%\Scripts\pip.exe" install --quiet -r "%BACKEND%\requirements.txt"
+"%VENV_PIP%" install --quiet --upgrade pip
+"%VENV_PIP%" install --quiet -r "%BACKEND%\requirements.txt"
 if errorlevel 1 (
     echo [ERROR] pip install failed. Check your internet connection and requirements.txt.
     pause
@@ -87,9 +102,9 @@ echo.
 echo [4/5] Setting up Node frontend...
 
 if not exist "%FRONTEND%\node_modules" (
-    echo         node_modules not found — running npm install...
+    echo         node_modules not found - running npm install...
     pushd "%FRONTEND%"
-    npm install
+    "%NPM_CMD%" install
     if errorlevel 1 (
         echo [ERROR] npm install failed. Check your internet connection.
         popd
@@ -104,18 +119,18 @@ if not exist "%FRONTEND%\node_modules" (
 )
 
 :: ─────────────────────────────────────────────────
-:: 5. Launch backend + frontend via helper scripts
+:: 5. Write resolved paths into helper scripts and launch
 :: ─────────────────────────────────────────────────
 echo.
 echo [5/5] Launching servers...
 
-:: Launch Backend — uses backend\_run.cmd to avoid quoting issues
+:: Launch Backend — calls _run.cmd which uses absolute venv python path
 start "GEODIA Backend" cmd /k "%BACKEND%\_run.cmd"
 
 :: Give backend a moment to start
 timeout /t 3 /nobreak >nul
 
-:: Launch Frontend — uses frontend\_run.cmd
+:: Launch Frontend — calls _run.cmd which uses absolute npm path
 start "GEODIA Frontend" cmd /k "%FRONTEND%\_run.cmd"
 
 echo.
