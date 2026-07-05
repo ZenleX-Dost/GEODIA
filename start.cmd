@@ -81,7 +81,7 @@ if errorlevel 1 (
 echo         Python dependencies OK.
 
 :: ─────────────────────────────────────────────────
-:: 4. Frontend setup — npm install if node_modules missing or package-lock changed
+:: 4. Frontend setup — npm install if node_modules missing
 :: ─────────────────────────────────────────────────
 echo.
 echo [4/5] Setting up Node frontend...
@@ -104,21 +104,19 @@ if not exist "%FRONTEND%\node_modules" (
 )
 
 :: ─────────────────────────────────────────────────
-:: 5. Launch backend + frontend in separate windows
+:: 5. Launch backend + frontend via helper scripts
 :: ─────────────────────────────────────────────────
 echo.
 echo [5/5] Launching servers...
 
-:: Launch Backend
-start "GEODIA Backend (FastAPI :8000)" cmd /k ^
-    "cd /d "%BACKEND%" && echo. && echo  === GEODIA Backend === && echo  http://localhost:8000 && echo  API docs: http://localhost:8000/docs && echo. && "%VENV%\Scripts\python.exe" -m uvicorn app.main:app --reload --port 8000"
+:: Launch Backend — uses backend\_run.cmd to avoid quoting issues
+start "GEODIA Backend" cmd /k "%BACKEND%\_run.cmd"
 
-:: Wait a moment so backend gets a head start
+:: Give backend a moment to start
 timeout /t 3 /nobreak >nul
 
-:: Launch Frontend
-start "GEODIA Frontend (Vite :5173)" cmd /k ^
-    "cd /d "%FRONTEND%" && echo. && echo  === GEODIA Frontend === && echo  http://localhost:5173 && echo. && npm run dev"
+:: Launch Frontend — uses frontend\_run.cmd
+start "GEODIA Frontend" cmd /k "%FRONTEND%\_run.cmd"
 
 echo.
 echo  Backend   ^>  http://localhost:8000
