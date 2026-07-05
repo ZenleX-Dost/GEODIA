@@ -3,12 +3,13 @@ from typing import List
 
 class ActionBase(BaseModel):
     ouvrage_id: int
-    nom: str
-    description: str
-    horizon: str  # 0-3m, 3-6m, 6-12m, >12m
-    cout_estime: float
-    gain_risque: float
-    is_class_a_critical: bool = False
+    pathologie: str | None = None
+    type_action: str | None = None
+    cout: float | None = None
+    duree_jours: int | None = None
+    urgence: str | None = None
+    statut: str | None = None
+    declencheur: str | None = None
 
 class ActionResponse(ActionBase):
     id: int

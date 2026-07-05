@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile, File
 from typing import Dict
-from app.importers.nasa_power import fetch_nasa_power_data
+import os
 
 router = APIRouter(prefix="/api/imports", tags=["Imports"])
 
@@ -10,11 +10,26 @@ async def import_environmental_data(ouvrage_id: int):
     Trigger environmental data import for a specific structure.
     Currently uses simulated data.
     """
-    # In a real scenario, we would use the structure's coordinates
-    # lat, lon = get_ouvrage_coords(ouvrage_id)
-    # fetch_nasa_power_data(lat, lon, "2024-01-01", "2026-06-01")
-    
     return {
         "status": "success",
         "message": f"Données environnementales simulées importées avec succès pour l'ouvrage {ouvrage_id}."
+    }
+
+@router.post("/upload", response_model=Dict[str, str])
+async def upload_data_file(file: UploadFile = File(...), type: str = "insar"):
+    """
+    Upload CSV/Excel file for data integration (InSAR, Climat, Pathologies, etc.).
+    """
+    upload_dir = "uploads"
+    os.makedirs(upload_dir, exist_ok=True)
+    file_path = os.path.join(upload_dir, file.filename)
+    
+    with open(file_path, "wb") as buffer:
+        content = await file.read()
+        buffer.write(content)
+        
+    return {
+        "status": "success",
+        "message": f"Fichier {file.filename} ({type}) uploadé avec succès et prêt pour l'intégration.",
+        "filename": file.filename
     }

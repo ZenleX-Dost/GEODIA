@@ -1,7 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ScientificDisclaimer from '../components/ui/ScientificDisclaimer';
 
 export default function Exports() {
+  const [ouvrageId, setOuvrageId] = useState(1);
+  const [inspectionId, setInspectionId] = useState(1);
+
+  const handleDownloadOuvrage = () => {
+    window.open(`http://localhost:8000/api/reports/pdf/ouvrage/${ouvrageId}`, '_blank');
+  };
+
+  const handleDownloadInspection = () => {
+    window.open(`http://localhost:8000/api/reports/pdf/inspection/${inspectionId}`, '_blank');
+  };
+
+  const handleDownloadExcel = () => {
+    window.open(`http://localhost:8000/api/reports/excel/maintenance`, '_blank');
+  };
+
   return (
     <div className="page-container">
       <div className="page-header">
@@ -18,12 +33,16 @@ export default function Exports() {
             Export détaillé incluant les données structurelles, les indices de santé (IPD, IAE, IAD), et le modèle probabiliste.
           </p>
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <select style={{ flex: 1, padding: '0.5rem', background: 'var(--bg-surface)', color: 'white', border: '1px solid var(--border-secondary)', borderRadius: '4px' }}>
-              <option>Tous les Ouvrages (ZIP)</option>
-              <option>R-102 (Déversoir Eau de Mer)</option>
-              <option>R-108 (Bassin REM1)</option>
+            <select 
+              value={ouvrageId} 
+              onChange={e => setOuvrageId(Number(e.target.value))}
+              style={{ flex: 1, padding: '0.5rem', background: 'var(--bg-surface)', color: 'white', border: '1px solid var(--border-secondary)', borderRadius: '4px' }}
+            >
+              <option value="1">Ouvrage #1 (R-102)</option>
+              <option value="2">Ouvrage #2 (R-105)</option>
+              <option value="3">Ouvrage #3 (R-108)</option>
             </select>
-            <button className="btn btn-primary">Générer PDF</button>
+            <button className="btn btn-primary" onClick={handleDownloadOuvrage}>Générer PDF</button>
           </div>
         </div>
 
@@ -33,11 +52,14 @@ export default function Exports() {
             Synthèse des pathologies relevées sur le terrain avec photos et notes de l'inspecteur.
           </p>
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <select style={{ flex: 1, padding: '0.5rem', background: 'var(--bg-surface)', color: 'white', border: '1px solid var(--border-secondary)', borderRadius: '4px' }}>
-              <option>Dernière Inspection (R-102)</option>
-              <option>Archive Q1 2026</option>
+            <select 
+              value={inspectionId}
+              onChange={e => setInspectionId(Number(e.target.value))}
+              style={{ flex: 1, padding: '0.5rem', background: 'var(--bg-surface)', color: 'white', border: '1px solid var(--border-secondary)', borderRadius: '4px' }}
+            >
+              <option value="1">Dernière Inspection (ID: 1)</option>
             </select>
-            <button className="btn btn-primary">Générer PDF</button>
+            <button className="btn btn-primary" onClick={handleDownloadInspection}>Générer PDF</button>
           </div>
         </div>
 
@@ -51,7 +73,7 @@ export default function Exports() {
               <option>Scénario S2 (Équilibré)</option>
               <option>Scénario S1 (Économique)</option>
             </select>
-            <button className="btn btn-primary">Générer Excel</button>
+            <button className="btn btn-primary" onClick={handleDownloadExcel}>Générer Excel</button>
           </div>
         </div>
       </div>

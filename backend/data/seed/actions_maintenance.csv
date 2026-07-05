@@ -1,21 +1,19 @@
 id,ouvrage_code,pathologie,type_action,cout_dh,duree_jours,urgence,declencheur,preuve_min
-1,R-102,P2,Inspection approfondie corrosion,15000,3,0-3m,P2 > 60% + classe A,Potentiel de corrosion + résistivité
-2,R-102,P3,Inspection subaquatique,25000,5,0-3m,P3 > 50% + zone submergée,Mesure sous eau
-3,R-102,P6,Géoradar radier + bathymétrie,35000,7,3-6m,P6 > 45% + affouillement possible,GPR + mesures bathymétriques
-4,R-104,P2,Inspection corrosion canal,18000,4,0-3m,P2 > 60% + exposition XS3,Potentiel + chlorures
-5,R-104,P6,GPR + nivellement canal,30000,6,3-6m,P6 > 50%,Géoradar + nivellement
-6,R-105,P8,Prélèvements chimiques,12000,2,3-6m,IAE élevé + P8 > 35%,pH + dosage phosphates
-7,R-105,P9,Analyse sulfates,12000,2,3-6m,P9 > 30% + environnement agressif,DRX + sulfates
-8,R-106,P7,Mesure carbonatation,8000,2,3-6m,P7 > 60% + bâtiment,Phénolphtaléine + carottage
-9,R-108,P2,Diagnostic corrosion bassin,20000,4,0-3m,P2 > 60% + classe B,Potentiel + chlorures
-10,R-108,P6,Inspection radier bassin,40000,8,3-6m,P6 > 50% + InSAR positif,GPR + nivellement
-11,R-111,P8,Analyse chimique fosse,15000,3,0-3m,P8 > 60% + fosse,pH + phosphates + DRX
-12,R-111,P9,Analyse sulfatique fosse,15000,3,0-3m,P9 > 60% + phosphogypse,DRX + sulfates
-13,R-115,P8,Prélèvements phosphogypse,18000,4,0-3m,P8 > 60%,pH + phosphates
-14,R-115,P9,Diagnostic sulfatique,18000,4,0-3m,P9 > 60%,Sulfates + DRX
-15,R-102,P11,Relevé géométrique érosion,10000,3,6-12m,P11 > 30%,Relevé visuel + mesures
-16,R-105,P11,Mesure érosion canal,12000,3,6-12m,P11 > 40%,Relevé géométrique
-17,R-102,P12,Nivellement tassement,22000,5,3-6m,P12 > 35% + InSAR,InSAR + nivellement terrain
-18,R-108,P12,Surveillance tassement bassin,25000,5,3-6m,P12 > 40%,InSAR + nivellement
-19,R-106,P4,Relevé fissuration bâtiment,8000,2,6-12m,P4 > 30%,Cartographie fissures + UPV
-20,R-110,P7,Carbonatation réservoir,10000,3,6-12m,P7 > 50%,Phénolphtaléine
+1,Ouvrage 1,P2,Inspection approfondie corrosion,15000,3,0-3m,P2 > 60% + classe A,Potentiel de corrosion + résistivité
+2,Ouvrage 1,P3,Inspection subaquatique,25000,5,0-3m,P3 > 50% + zone submergée,Mesure sous eau
+3,Ouvrage 1,P6,Géoradar radier + bathymétrie,35000,7,3-6m,P6 > 45% + affouillement possible,GPR + mesures bathymétriques
+4,Ouvrage 3,P2,Inspection corrosion canal,18000,4,0-3m,P2 > 60% + exposition XS3,Potentiel + chlorures
+5,Ouvrage 3,P6,GPR + nivellement canal,30000,6,3-6m,P6 > 50%,Géoradar + nivellement
+6,Ouvrage 4,P8,Prélèvements chimiques,12000,2,3-6m,IAE élevé + P8 > 35%,pH + dosage phosphates
+7,Ouvrage 4,P9,Analyse sulfates,12000,2,3-6m,P9 > 30% + environnement agressif,DRX + sulfates
+8,Ouvrage 5,P7,Mesure carbonatation,8000,2,3-6m,P7 > 60% + bâtiment,Phénolphtaléine + carottage
+9,Ouvrage 9,P2,Diagnostic corrosion bassin,20000,4,0-3m,P2 > 60% + classe B,Potentiel + chlorures
+10,Ouvrage 9,P6,Inspection radier bassin,40000,8,3-6m,P6 > 50% + InSAR positif,GPR + nivellement
+11,Ouvrage 8,P8,Prélèvements phosphogypse,18000,4,0-3m,P8 > 60%,pH + phosphates
+12,Ouvrage 8,P9,Diagnostic sulfatique,18000,4,0-3m,P9 > 60%,Sulfates + DRX
+13,Ouvrage 1,P11,Relevé géométrique érosion,10000,3,6-12m,P11 > 30%,Relevé visuel + mesures
+14,Ouvrage 4,P11,Mesure érosion canal,12000,3,6-12m,P11 > 40%,Relevé géométrique
+15,Ouvrage 1,P12,Nivellement tassement,22000,5,3-6m,P12 > 35% + InSAR,InSAR + nivellement terrain
+16,Ouvrage 9,P12,Surveillance tassement bassin,25000,5,3-6m,P12 > 40%,InSAR + nivellement
+17,Ouvrage 5,P4,Relevé fissuration bâtiment,8000,2,6-12m,P4 > 30%,Cartographie fissures + UPV
+18,Ouvrage 10,P7,Carbonatation réservoir,10000,3,6-12m,P7 > 50%,Phénolphtaléine

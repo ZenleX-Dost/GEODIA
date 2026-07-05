@@ -28,7 +28,7 @@ def generate_structure_sheet_pdf(ouvrage_id: int, ouvrage_data: dict) -> BytesIO
         ["Code", ouvrage_data.get('code', 'N/A')],
         ["Famille", ouvrage_data.get('famille', 'N/A')],
         ["Classe", ouvrage_data.get('classe', 'N/A')],
-        ["Coordonnées", f"{ouvrage_data.get('gps_lat', '')}, {ouvrage_data.get('gps_long', '')}"]
+        ["Coordonnées", f"{ouvrage_data.get('lat', '')}, {ouvrage_data.get('lon', '')}"]
     ]
     
     t = Table(data, colWidths=[150, 300])

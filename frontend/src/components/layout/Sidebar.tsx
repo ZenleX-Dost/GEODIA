@@ -12,6 +12,7 @@ import {
   Radar,
   Wrench,
   FileOutput,
+  FileUp,
 } from 'lucide-react';
 
 const navItems = [
@@ -24,6 +25,7 @@ const navItems = [
   { path: '/insar', label: 'InSAR', icon: Radar },
   { path: '/maintenance', label: 'Maintenance & Optimisation', icon: Wrench },
   { path: '/exports', label: 'Exports', icon: FileOutput },
+  { path: '/import', label: 'Importation', icon: FileUp },
 ];
 
 export default function Sidebar() {

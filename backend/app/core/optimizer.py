@@ -31,11 +31,9 @@ def run_budget_optimization(actions: List[Dict], budget_max: float, scenario: st
                 prob += action_vars[a['id']] == 1, f"Force_ClassA_Critical_{a['id']}"
                 
     if scenario == 'S3':
-        # Force high gain actions regardless of cost (but might break budget, so be careful)
-        # Alternatively, ensure risk_gain > threshold is selected
         for a in actions:
-            if a['risk_gain'] >= 0.8:
-                prob += action_vars[a['id']] == 1, f"Force_HighGain_{a['id']}"
+            if a.get('is_class_a_high', False):
+                prob += action_vars[a['id']] == 1, f"Force_ClassA_High_{a['id']}"
                 
     # Solve
     prob.solve()

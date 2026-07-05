@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from sqlalchemy import select
 from typing import List
 
@@ -10,8 +10,8 @@ from app.schemas.maintenance import ActionResponse, MaintenancePlan
 router = APIRouter(prefix="/api/maintenance", tags=["Maintenance"])
 
 @router.get("/plan", response_model=MaintenancePlan)
-async def get_maintenance_plan(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Action))
+def get_maintenance_plan(db: Session = Depends(get_db)):
+    result = db.execute(select(Action))
     actions = result.scalars().all()
     
     plan = {
@@ -38,7 +38,7 @@ async def get_maintenance_plan(db: AsyncSession = Depends(get_db)):
     return plan
 
 @router.get("/actions", response_model=List[ActionResponse])
-async def get_all_actions(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Action))
+def get_all_actions(db: Session = Depends(get_db)):
+    result = db.execute(select(Action))
     actions = result.scalars().all()
     return [ActionResponse.model_validate(a) for a in actions]

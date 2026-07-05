@@ -1,90 +1,178 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { RefreshCw } from 'lucide-react';
 import { IAELineChart } from '../components/charts/IAELineChart';
 import ScientificDisclaimer from '../components/ui/ScientificDisclaimer';
+import { apiFetch } from '../api/client';
+import type { Ouvrage } from '../types/ouvrage';
 
 export default function Environment() {
   const [ouvrageId, setOuvrageId] = useState<number>(1);
+  const [ouvrages, setOuvrages] = useState<Ouvrage[]>([]);
+  const [envData, setEnvData] = useState<any[]>([]);
+  const [syncingNasa, setSyncingNasa] = useState(false);
+  const [syncingCopernicus, setSyncingCopernicus] = useState(false);
+
+  const fetchTimeseries = (id: number) => {
+    apiFetch(`/env/${id}/timeseries`)
+      .then(data => setEnvData(data))
+      .catch(err => console.error("Failed to load timeseries", err));
+  };
+
+  useEffect(() => {
+    apiFetch('/assets').then(data => {
+      setOuvrages(data);
+      if (data.length > 0) {
+        setOuvrageId(data[0].id);
+        fetchTimeseries(data[0].id);
+      }
+    }).catch(err => console.error("Failed to load ouvrages", err));
+  }, []);
+
+  useEffect(() => {
+    if (ouvrageId) fetchTimeseries(ouvrageId);
+  }, [ouvrageId]);
+
+  const handleNasaSync = async () => {
+    try {
+      setSyncingNasa(true);
+      const res = await apiFetch('/env/sync', { method: 'POST' });
+      alert(res.message);
+      fetchTimeseries(ouvrageId);
+    } catch (err) {
+      alert("Erreur de synchronisation NASA : " + (err as Error).message);
+    } finally {
+      setSyncingNasa(false);
+    }
+  };
+
+  const handleCopernicusSync = async () => {
+    try {
+      setSyncingCopernicus(true);
+      const res = await apiFetch('/env/sync-copernicus', { method: 'POST' });
+      alert(res.message);
+      fetchTimeseries(ouvrageId);
+    } catch (err) {
+      alert("Erreur de synchronisation Copernicus : " + (err as Error).message);
+    } finally {
+      setSyncingCopernicus(false);
+    }
+  };
 
   return (
     <div className="page-container">
-      <div className="page-header">
-        <h1 className="page-title">Environnement</h1>
-        <p className="page-subtitle">Suivi des variables climatiques et de l'agressivité de l'environnement (IAE)</p>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h1 className="page-title">Environnement</h1>
+          <p className="page-subtitle">Suivi des variables climatiques et de l'agressivité de l'environnement (IAE)</p>
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button 
+            className="btn btn-primary" 
+            onClick={handleNasaSync} 
+            disabled={syncingNasa}
+          >
+            <RefreshCw className={syncingNasa ? "animate-spin" : ""} />
+            {syncingNasa ? 'Synchronisation...' : 'Synchroniser NASA'}
+          </button>
+          <button 
+            className="btn btn-secondary" 
+            onClick={handleCopernicusSync} 
+            disabled={syncingCopernicus}
+            style={{ background: '#1e40af', color: 'white', borderColor: '#1e40af' }}
+          >
+            <RefreshCw className={syncingCopernicus ? "animate-spin" : ""} />
+            {syncingCopernicus ? 'Synchronisation...' : 'Synchroniser Copernicus'}
+          </button>
+        </div>
       </div>
 
       <ScientificDisclaimer />
 
-      <div style={{ display: 'flex', gap: '2rem', marginTop: '2rem' }}>
-        <div className="card" style={{ flex: 1 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h2 className="card-title">Séries Temporelles</h2>
-            <span className="badge badge-simulated">DONNÉES SIMULÉES (NASA POWER)</span>
+      <div className="grid-2" style={{ marginTop: '1.5rem', alignItems: 'start' }}>
+        <div className="card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h2 className="card-title" style={{ marginBottom: 0 }}>Séries Temporelles</h2>
+            <div style={{ display: 'flex', gap: '0.25rem' }}>
+              <span className="badge" style={{ background: 'rgba(34, 197, 94, 0.1)', color: '#22c55e', border: '1px solid rgba(34, 197, 94, 0.2)' }}>NASA CMR</span>
+              <span className="badge" style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', border: '1px solid rgba(59, 130, 246, 0.2)' }}>CDSE</span>
+            </div>
           </div>
 
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>Sélectionner un ouvrage:</label>
+          <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <label style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', fontWeight: 500, textTransform: 'uppercase' }}>Ouvrage:</label>
             <select 
               value={ouvrageId} 
               onChange={(e) => setOuvrageId(Number(e.target.value))}
-              style={{ display: 'block', width: '200px', padding: '0.5rem', background: 'var(--bg-surface)', color: 'white', border: '1px solid var(--border-secondary)', borderRadius: '4px', marginTop: '0.5rem' }}
+              style={{ padding: '0.25rem 0.5rem', background: 'var(--bg-surface)', color: 'var(--text-primary)', border: '1px solid var(--border-secondary)', borderRadius: '4px', fontSize: 'var(--text-sm)', fontFamily: 'var(--font-mono)' }}
             >
-              {[1, 2, 3, 4, 5].map(id => (
-                <option key={id} value={id}>Ouvrage {id}</option>
+              {ouvrages.map(o => (
+                <option key={o.id} value={o.id}>{o.nom}</option>
               ))}
             </select>
           </div>
 
-          <IAELineChart />
+          <IAELineChart data={envData} />
         </div>
 
-        <div className="card" style={{ flex: 1 }}>
-          <h2 className="card-title">Agressivité de l'Environnement (IAE)</h2>
-          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-            L'Indice d'Altération Environnementale (IAE) est calculé sur la base des sous-scores suivants :
-          </p>
+        <div className="card">
+          <h2 className="card-title" style={{ marginBottom: '1rem' }}>Agressivité de l'Environnement (IAE)</h2>
           
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Paramètre</th>
-                <th>Valeur Moyenne</th>
-                <th>Sous-score</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Température (T)</td>
-                <td>22.5 °C</td>
-                <td><span className="badge badge-high">Élevé</span></td>
-              </tr>
-              <tr>
-                <td>Humidité (H)</td>
-                <td>78.0 %</td>
-                <td><span className="badge badge-critical">Critique</span></td>
-              </tr>
-              <tr>
-                <td>Exposition Marine (M)</td>
-                <td>Splash Zone</td>
-                <td><span className="badge badge-critical">Critique</span></td>
-              </tr>
-              <tr>
-                <td>Pluviométrie (R)</td>
-                <td>350 mm/an</td>
-                <td><span className="badge badge-warning">Moyen</span></td>
-              </tr>
-              <tr>
-                <td>Pollution (P)</td>
-                <td>Faible SO2</td>
-                <td><span className="badge badge-success">Faible</span></td>
-              </tr>
-            </tbody>
-          </table>
+          {(() => {
+            const latest = envData.length > 0 ? envData[envData.length - 1] : null;
+            if (!latest) return <div style={{ padding: '2rem' }}>Aucune donnée disponible.</div>;
 
-          <div style={{ marginTop: '2rem', padding: '1rem', background: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', textAlign: 'center' }}>
-            <div style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>IAE Global - Ouvrage {ouvrageId}</div>
-            <div style={{ fontSize: 'var(--text-4xl)', fontWeight: 'bold', color: 'var(--status-critical)' }}>0.82</div>
-            <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)', marginTop: '0.5rem' }}>Environnement très agressif</div>
-          </div>
+            const t = latest.temperature?.toFixed(1) || '--';
+            const h = latest.humidite?.toFixed(1) || '--';
+            const p = latest.pluie?.toFixed(1) || '--';
+            const so2 = latest.pollution_so2?.toFixed(2) || '--';
+            const iaeScore = latest.iae?.toFixed(2) || '--';
+
+            return (
+              <>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Paramètre</th>
+                      <th>Valeur Actuelle</th>
+                      <th>Source</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Température (T)</td>
+                      <td className="numeric">{t} °C</td>
+                      <td><span className="badge badge-info">{latest.source || 'NASA'}</span></td>
+                    </tr>
+                    <tr>
+                      <td>Humidité (H)</td>
+                      <td className="numeric">{h} %</td>
+                      <td><span className="badge badge-info">{latest.source || 'NASA'}</span></td>
+                    </tr>
+                    <tr>
+                      <td>Pluviométrie (R)</td>
+                      <td className="numeric">{p} mm/jour</td>
+                      <td><span className="badge badge-info">{latest.source || 'NASA'}</span></td>
+                    </tr>
+                    <tr>
+                      <td>Pollution (SO2)</td>
+                      <td className="numeric">{so2} DU</td>
+                      <td><span className="badge badge-info">{latest.source || 'NASA'}</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--bg-primary)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-secondary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 600 }}>IAE Global - Ouvrage {ouvrageId}</div>
+                    <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)', marginTop: '0.25rem' }}>{latest.date ? new Date(latest.date).toLocaleDateString() : 'En direct'}</div>
+                  </div>
+                  <div style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--status-critical)', fontFamily: 'var(--font-mono)' }}>
+                    {iaeScore}
+                  </div>
+                </div>
+              </>
+            );
+          })()}
         </div>
       </div>
     </div>

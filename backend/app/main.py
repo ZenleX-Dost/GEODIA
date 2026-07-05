@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 
 from app.config import settings
 from app.database import engine, Base
-from app.routers import assets, alerts, inspections, reports, compute, imports, insar, maintenance
+from app.routers import assets, alerts, inspections, reports, compute, imports, insar, maintenance, env, area
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -42,8 +42,10 @@ app.include_router(inspections.router)
 app.include_router(reports.router)
 app.include_router(compute.router)
 app.include_router(imports.router)
+app.include_router(env.router)
 app.include_router(insar.router)
 app.include_router(maintenance.router)
+app.include_router(area.router)
 
 
 @app.get("/")

@@ -1,7 +1,10 @@
+"""
+Inspections API — fully synchronous (matches the sync SQLAlchemy engine).
+"""
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from sqlalchemy import select
-from typing import List
+from typing import List, Optional
 import shutil
 import os
 import json
@@ -15,15 +18,16 @@ from app.schemas.inspection import (
     InspectionResponse,
     InspectionUpdate,
     ObservationCreate,
-    ObservationResponse
+    ObservationResponse,
 )
 from app.config import settings
 
 router = APIRouter(prefix="/api/inspections", tags=["Inspections"])
 
+
 @router.post("", response_model=InspectionResponse)
-async def create_inspection(inspection_in: InspectionCreate, db: AsyncSession = Depends(get_db)):
-    # Create the inspection model
+def create_inspection(inspection_in: InspectionCreate, db: Session = Depends(get_db)):
+    """Create a new inspection with optional observations."""
     new_inspection = Inspection(
         ouvrage_id=inspection_in.ouvrage_id,
         date=inspection_in.date_inspection,
@@ -31,31 +35,25 @@ async def create_inspection(inspection_in: InspectionCreate, db: AsyncSession = 
         etat=inspection_in.etat_global,
         commentaire=inspection_in.notes,
         validation=False,
-        photos="[]"
+        photos="[]",
     )
-    
     db.add(new_inspection)
-    await db.flush() # To get the new_inspection.id
-    
-    # Add observations
+    db.flush()  # populate new_inspection.id before adding observations
+
     for obs_in in inspection_in.observations:
         new_obs = Observation(
             inspection_id=new_inspection.id,
-            pathologie_code=obs_in.pathologie_code,
+            pathologie=obs_in.pathologie_code,
             zone=obs_in.zone,
             gravite=obs_in.gravite,
-            etendue_pct=obs_in.etendue_pct,
-            preuves=obs_in.preuves,
-            photo_url=obs_in.photo_url
+            etendue=obs_in.etendue_pct,
+            preuve=obs_in.preuves,
         )
         db.add(new_obs)
-        
-    await db.commit()
-    await db.refresh(new_inspection)
-    
-    # Transform model back to schema response
-    # For a real implementation, we would want to join with Ouvrage to get nom/code
-    # but returning basic info for now.
+
+    db.commit()
+    db.refresh(new_inspection)
+
     return InspectionResponse(
         id=new_inspection.id,
         ouvrage_id=new_inspection.ouvrage_id,
@@ -65,21 +63,21 @@ async def create_inspection(inspection_in: InspectionCreate, db: AsyncSession = 
         notes=new_inspection.commentaire,
         statut="Validée" if new_inspection.validation else "En attente",
         created_at=new_inspection.created_at,
-        observations=[] # To keep simple for now
+        observations=[],
     )
 
+
 @router.get("", response_model=List[InspectionResponse])
-async def list_inspections(ouvrage_id: int = None, db: AsyncSession = Depends(get_db)):
+def list_inspections(ouvrage_id: Optional[int] = None, db: Session = Depends(get_db)):
+    """List all inspections, optionally filtered by ouvrage."""
     query = select(Inspection)
     if ouvrage_id:
         query = query.where(Inspection.ouvrage_id == ouvrage_id)
-        
-    result = await db.execute(query)
-    inspections = result.scalars().all()
-    
-    response = []
-    for insp in inspections:
-        response.append(InspectionResponse(
+
+    inspections = db.execute(query).scalars().all()
+
+    return [
+        InspectionResponse(
             id=insp.id,
             ouvrage_id=insp.ouvrage_id,
             date_inspection=insp.date,
@@ -88,17 +86,19 @@ async def list_inspections(ouvrage_id: int = None, db: AsyncSession = Depends(ge
             notes=insp.commentaire,
             statut="Validée" if insp.validation else "En attente",
             created_at=insp.created_at,
-            observations=[]
-        ))
-    return response
+            observations=[],
+        )
+        for insp in inspections
+    ]
+
 
 @router.get("/{id}", response_model=InspectionResponse)
-async def get_inspection(id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Inspection).where(Inspection.id == id))
-    insp = result.scalar_one_or_none()
+def get_inspection(id: int, db: Session = Depends(get_db)):
+    """Get a single inspection by ID."""
+    insp = db.execute(select(Inspection).where(Inspection.id == id)).scalar_one_or_none()
     if not insp:
         raise HTTPException(status_code=404, detail="Inspection non trouvée")
-        
+
     return InspectionResponse(
         id=insp.id,
         ouvrage_id=insp.ouvrage_id,
@@ -108,42 +108,44 @@ async def get_inspection(id: int, db: AsyncSession = Depends(get_db)):
         notes=insp.commentaire,
         statut="Validée" if insp.validation else "En attente",
         created_at=insp.created_at,
-        observations=[]
+        observations=[],
     )
 
+
 @router.post("/{id}/photos")
-async def upload_inspection_photo(id: int, file: UploadFile = File(...), db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Inspection).where(Inspection.id == id))
-    insp = result.scalar_one_or_none()
+def upload_inspection_photo(id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+    """Upload and attach a photo to an existing inspection."""
+    insp = db.execute(select(Inspection).where(Inspection.id == id)).scalar_one_or_none()
     if not insp:
         raise HTTPException(status_code=404, detail="Inspection non trouvée")
-        
+
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
-    file_path = os.path.join(settings.UPLOAD_DIR, file.filename)
-    
+    file_path = os.path.join(str(settings.UPLOAD_DIR), file.filename)
+
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
-        
-    photos = []
+
+    photos: list = []
     if insp.photos:
         try:
             photos = json.loads(insp.photos)
-        except:
-            pass
-            
+        except json.JSONDecodeError:
+            photos = []
+
     photos.append(file_path)
     insp.photos = json.dumps(photos)
-    
-    await db.commit()
+    db.commit()
+
     return {"filename": file.filename, "path": file_path}
 
+
 @router.patch("/{id}/validate")
-async def validate_inspection(id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Inspection).where(Inspection.id == id))
-    insp = result.scalar_one_or_none()
+def validate_inspection(id: int, db: Session = Depends(get_db)):
+    """Mark an inspection as validated."""
+    insp = db.execute(select(Inspection).where(Inspection.id == id)).scalar_one_or_none()
     if not insp:
         raise HTTPException(status_code=404, detail="Inspection non trouvée")
-        
+
     insp.validation = True
-    await db.commit()
+    db.commit()
     return {"status": "success", "message": "Inspection validée"}

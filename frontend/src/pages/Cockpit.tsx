@@ -15,6 +15,7 @@ import {
   BellPlus,
   Send,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import KPICard from '../components/ui/KPICard';
 import ScientificDisclaimer from '../components/ui/ScientificDisclaimer';
 import Header from '../components/layout/Header';
@@ -22,6 +23,7 @@ import { getKPIs, getAlerts } from '../api/assets';
 import type { KPISummary, Alert } from '../types/ouvrage';
 
 export default function Cockpit() {
+  const navigate = useNavigate();
   const [kpis, setKpis] = useState<KPISummary | null>(null);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(true);
@@ -110,55 +112,54 @@ export default function Cockpit() {
             />
           </div>
 
-          {/* Quick Actions */}
-          <section className="section">
-            <h3 className="section-title">
-              <Send size={20} /> Actions Rapides
-            </h3>
-            <div className="quick-actions">
-              <button className="btn btn-primary">
-                <FileText size={16} /> Export PDF unique
-              </button>
-              <button className="btn btn-secondary">
-                <PlusCircle size={16} /> Nouveau rapport
-              </button>
-              <button className="btn btn-secondary">
-                <CalendarClock size={16} /> Plan d'inspection
-              </button>
-              <button className="btn btn-secondary">
-                <BellPlus size={16} /> Ajouter alerte
-              </button>
-              <button className="btn btn-secondary">
-                <Send size={16} /> Demande d'intervention
-              </button>
-            </div>
-          </section>
+          <div className="grid-2">
+            {/* Quick Actions */}
+            <section className="section">
+              <h3 className="section-title">
+                <Send size={20} /> Actions Rapides
+              </h3>
+              <div className="quick-actions">
+                <button className="btn btn-primary" onClick={() => navigate('/exports')}>
+                  <FileText size={16} /> Export PDF unique
+                </button>
+                <button className="btn btn-secondary" onClick={() => navigate('/inspection')}>
+                  <PlusCircle size={16} /> Nouveau rapport
+                </button>
+                <button className="btn btn-secondary" onClick={() => navigate('/maintenance')}>
+                  <CalendarClock size={16} /> Plan d'inspection
+                </button>
+                <button className="btn btn-secondary" onClick={() => navigate('/import')}>
+                  <BellPlus size={16} /> Intégrer Données
+                </button>
+              </div>
+            </section>
 
-          {/* Alerts Feed */}
-          <section className="section">
-            <h3 className="section-title">
-              <AlertTriangle size={20} /> Alertes Récentes
-            </h3>
-            <div className="alerts-feed">
-              {alerts.map((alert) => (
-                <div className="alert-card" key={alert.id}>
-                  <div className={`alert-dot ${alert.severity}`} />
-                  <div className="alert-content">
-                    <div className="alert-title">
-                      {alert.ouvrage_code} — {alert.ouvrage_nom}
+            {/* Alerts Feed */}
+            <section className="section">
+              <h3 className="section-title">
+                <AlertTriangle size={20} /> Alertes Récentes
+              </h3>
+              <div className="alerts-feed">
+                {alerts.map((alert) => (
+                  <div className="alert-card" key={alert.id}>
+                    <div className={`alert-dot ${alert.severity}`} />
+                    <div className="alert-content">
+                      <div className="alert-title">
+                        {alert.ouvrage_code} — {alert.ouvrage_nom}
+                      </div>
+                      <div className="alert-description">{alert.action}</div>
+                      <div className="alert-meta">
+                        {alert.source} · {alert.date}
+                      </div>
                     </div>
-                    <div className="alert-description">{alert.action}</div>
-                    <div className="alert-meta">
-                      {alert.source} · {alert.date}
-                    </div>
+                    <span className={`badge badge-${alert.severity}`}>
+                      {alert.severity}
+                    </span>
                   </div>
-                  <span className={`badge badge-${alert.severity}`}>
-                    {alert.severity}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </section>
+                ))}
+              </div>
+            </section>
+          </div>
         </div>
       </main>
     </>

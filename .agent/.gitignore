@@ -1,0 +1,2 @@
+# Ignore all agent skills (local AI assistant tooling, not part of the project source)
+skills/

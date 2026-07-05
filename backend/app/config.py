@@ -13,6 +13,10 @@ class Settings(BaseSettings):
     APP_NAME: str = "GEODIA SentinelCare GC"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = True
+    NASA_EARTHDATA_TOKEN: str = ""
+    COPERNICUS_TOKEN: str = ""
+    COPERNICUS_USERNAME: str = ""
+    COPERNICUS_PASSWORD: str = ""
 
     # --- Database (SQLite for V1 prototype) ---
     # To switch to PostgreSQL later, change this to:

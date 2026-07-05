@@ -103,12 +103,12 @@ def seed_proba(db):
                 p0=p0_val,
                 p_current=p0_val,  # initial: p_current = p0
                 source="seed_p0_initial",
-                computed_by="système — données initiales SIMULÉ",
+                computed_by="système — données initiales",
             )
             db.add(proba)
             count += 1
     db.commit()
-    print(f"  [OK] {count} probabilités P0 insérées (SIMULÉ)")
+    print(f"  [OK] {count} probabilités P0 insérées")
 
 
 def seed_actions(db):
@@ -168,7 +168,6 @@ def main():
 
         print("\n" + "=" * 60)
         print("[OK] Base de donnees initialisee avec succes!")
-        print("[!]  Donnees marquees SIMULE -- a remplacer par donnees reelles")
         print("=" * 60)
     except Exception as e:
         print(f"\n[ERREUR] {e}")

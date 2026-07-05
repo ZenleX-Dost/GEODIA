@@ -14,6 +14,7 @@ import ProbabilisticModel from './pages/ProbabilisticModel';
 import InSAR from './pages/InSAR';
 import Maintenance from './pages/Maintenance';
 import Exports from './pages/Exports';
+import DataImport from './pages/DataImport';
 
 import './index.css';
 
@@ -34,6 +35,7 @@ export default function App() {
             <Route path="/insar" element={<InSAR />} />
             <Route path="/maintenance" element={<Maintenance />} />
             <Route path="/exports" element={<Exports />} />
+            <Route path="/import" element={<DataImport />} />
           </Routes>
         </div>
       </div>

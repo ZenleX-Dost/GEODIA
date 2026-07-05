@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from sqlalchemy import select
 from pydantic import BaseModel
 from typing import List
@@ -22,16 +22,16 @@ class AlertResponse(BaseModel):
     date: str
 
 @router.get("/alerts", response_model=List[AlertResponse])
-async def get_alerts(db: AsyncSession = Depends(get_db)):
+def get_alerts(db: Session = Depends(get_db)):
     """
     Active alerts with priority. Uses real alert rule engine.
     """
     # Get all structures
-    result = await db.execute(select(Ouvrage))
+    result = db.execute(select(Ouvrage))
     ouvrages = result.scalars().all()
     
     # Get all probabilities
-    proba_res = await db.execute(select(Proba))
+    proba_res = db.execute(select(Proba))
     probas = proba_res.scalars().all()
     
     # Organize probabilities by ouvrage_id
@@ -39,7 +39,7 @@ async def get_alerts(db: AsyncSession = Depends(get_db)):
     for p in probas:
         if p.ouvrage_id not in proba_map:
             proba_map[p.ouvrage_id] = {}
-        proba_map[p.ouvrage_id][p.pathologie_code] = p.probability
+        proba_map[p.ouvrage_id][p.pathologie] = p.p_current
         
     generated_alerts = []
     alert_id = 1
@@ -47,12 +47,12 @@ async def get_alerts(db: AsyncSession = Depends(get_db)):
     for ouv in ouvrages:
         ouvrage_data = {
             "classe": ouv.classe,
-            "iad": ouv.iad or 0.0,
-            "iae": ouv.iae or 0.0,
+            "iad": getattr(ouv, 'iad', 0.0) or 0.0,
+            "iae": getattr(ouv, 'iae', 0.0) or 0.0,
             "etat_global": "E0" # would be derived from last inspection
         }
         proba_data = proba_map.get(ouv.id, {})
-        insar_data = {"consensus_max": 2 if ouv.iad and ouv.iad > 0.6 else 0} # Mock consensus
+        insar_data = {"consensus_max": 2 if getattr(ouv, 'iad', 0.0) > 0.6 else 0} # Mock consensus
         env_data = {}
         
         ouv_alerts = evaluate_alerts(ouvrage_data, proba_data, insar_data, env_data)
